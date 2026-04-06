@@ -2,6 +2,9 @@
 
 Submission by **Suraj Yadav** (`surajyadavx.in@gmail.com`). This project implements a finance dashboard backend with user roles, access control, record management, summary APIs, validation, and SQLite persistence.
 
+live demo link
+Backend URL:** https://finance-dashboard-backend-qti4.onrender.com/
+
 ## Tech Stack
 - Node.js + Express
 - SQLite
