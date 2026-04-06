@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Finance Dashboard Frontend</title>
+  <link rel="preconnect" href="https://api.fontshare.com" />
+  <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,900&display=swap" rel="stylesheet" />
+  <style>
+    :root, [data-theme="light"] {
+      --text-xs: clamp(0.75rem, 0.7rem + 0.25vw, 0.875rem);
+      --text-sm: clamp(0.875rem, 0.8rem + 0.35vw, 1rem);
+      --text-base: clamp(1rem, 0.95rem + 0.25vw, 1.125rem);
+      --text-lg: clamp(1.125rem, 1rem + 0.75vw, 1.5rem);
+      --text-xl: clamp(1.5rem, 1.2rem + 1.25vw, 2.25rem);
+      --space-1: 0.25rem; --space-2: 0.5rem; --space-3: 0.75rem; --space-4: 1rem; --space-5: 1.25rem; --space-6: 1.5rem; --space-8: 2rem; --space-10: 2.5rem; --space-12: 3rem; --space-16: 4rem;
+      --color-bg: #f7f6f2; --color-surface: #f9f8f5; --color-surface-2: #fbfbf9; --color-surface-offset: #f3f0ec; --color-border: #d4d1ca; --color-text: #28251d; --color-text-muted: #7a7974; --color-text-faint: #bab9b4; --color-text-inverse: #f9f8f4; --color-primary: #01696f; --color-primary-hover: #0c4e54; --color-success: #437a22; --color-error: #a12c7b; --color-warning: #964219; --radius-sm: 0.375rem; --radius-md: 0.5rem; --radius-lg: 0.75rem; --radius-xl: 1rem; --radius-full: 9999px; --shadow-sm: 0 1px 2px rgba(0,0,0,.06); --shadow-md: 0 4px 12px rgba(0,0,0,.08); --shadow-lg: 0 12px 32px rgba(0,0,0,.12); --transition: 180ms cubic-bezier(0.16, 1, 0.3, 1); --font-body: 'Satoshi', system-ui, sans-serif;
+    }
+    [data-theme="dark"] {
+      --color-bg: #171614; --color-surface: #1c1b19; --color-surface-2: #201f1d; --color-surface-offset: #22211f; --color-border: #393836; --color-text: #cdccca; --color-text-muted: #9a9895; --color-text-faint: #6b6966; --color-text-inverse: #1c1b19; --color-primary: #4f98a3; --color-primary-hover: #227f8b; --color-success: #6daa45; --color-error: #d163a7; --color-warning: #e8af34; --shadow-sm: 0 1px 2px rgba(0,0,0,.2); --shadow-md: 0 4px 12px rgba(0,0,0,.3); --shadow-lg: 0 12px 32px rgba(0,0,0,.4);
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html,body{height:100%;overflow:hidden}
+    body{font-family:var(--font-body);font-size:var(--text-base);background:var(--color-bg);color:var(--color-text);line-height:1.6}
+    button,input,select,textarea{font:inherit;color:inherit}
+    a,button,input,select{transition:all var(--transition)}
+    .app{display:grid;grid-template-columns:280px 1fr;grid-template-rows:72px 1fr;height:100dvh}
+    .sidebar{grid-row:1 / -1;background:linear-gradient(180deg,var(--color-surface),var(--color-surface-2));border-right:1px solid var(--color-border);padding:var(--space-6);overflow-y:auto}
+    .header{grid-column:2;display:flex;align-items:center;justify-content:space-between;padding:0 var(--space-6);border-bottom:1px solid var(--color-border);background:rgba(28,27,25,.88);backdrop-filter:blur(12px);position:sticky;top:0;z-index:10}
+    .main{grid-column:2;overflow-y:auto;padding:var(--space-6)}
+    .brand{display:flex;align-items:center;gap:var(--space-3);margin-bottom:var(--space-8)}
+    .logo{width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,var(--color-primary),color-mix(in srgb,var(--color-primary) 45%, white));display:grid;place-items:center;color:#fff;box-shadow:var(--shadow-md)}
+    .brand h1{font-size:var(--text-lg);line-height:1.1}
+    .brand p,.muted{color:var(--color-text-muted);font-size:var(--text-sm)}
+    .nav{display:grid;gap:var(--space-2)}
+    .nav button{border:none;background:transparent;text-align:left;padding:0.9rem 1rem;border-radius:var(--radius-lg);color:var(--color-text-muted);font-size:var(--text-sm);font-weight:600;cursor:pointer}
+    .nav button.active,.nav button:hover{background:color-mix(in srgb,var(--color-primary) 16%, transparent);color:var(--color-text)}
+    .header-left h2{font-size:var(--text-xl);line-height:1.1}
+    .header-right{display:flex;align-items:center;gap:var(--space-3)}
+    .chip,.status{display:inline-flex;align-items:center;gap:0.45rem;padding:0.45rem 0.75rem;border-radius:999px;font-size:var(--text-xs);font-weight:700;border:1px solid var(--color-border);background:var(--color-surface)}
+    .status.ok{color:var(--color-success)} .status.bad{color:var(--color-error)}
+    .btn{border:none;border-radius:var(--radius-lg);padding:0.82rem 1rem;cursor:pointer;font-weight:700}
+    .btn-primary{background:var(--color-primary);color:white}.btn-primary:hover{background:var(--color-primary-hover)}
+    .btn-secondary{background:var(--color-surface);border:1px solid var(--color-border)}
+    .grid{display:grid;gap:var(--space-5)}
+    .kpis{grid-template-columns:repeat(4,minmax(0,1fr));margin-bottom:var(--space-6)}
+    .two{grid-template-columns:1.4fr 1fr;margin-bottom:var(--space-6)}
+    .three{grid-template-columns:1fr 1fr 1fr}
+    .card{background:linear-gradient(180deg,var(--color-surface),var(--color-surface-2));border:1px solid var(--color-border);border-radius:var(--radius-xl);padding:var(--space-5);box-shadow:var(--shadow-sm)}
+    .card h3{font-size:var(--text-sm);color:var(--color-text-muted);margin-bottom:var(--space-3);text-transform:uppercase;letter-spacing:.08em}
+    .metric{font-size:clamp(1.8rem,1.5rem + 1vw,2.6rem);font-weight:900;font-variant-numeric:tabular-nums}
+    .delta{margin-top:var(--space-2);font-size:var(--text-sm)}
+    .up{color:var(--color-success)} .down{color:var(--color-error)}
+    .bar-list{display:grid;gap:var(--space-4)}
+    .bar-row{display:grid;grid-template-columns:120px 1fr auto;gap:var(--space-3);align-items:center}
+    .bar-track{height:10px;background:var(--color-surface-offset);border-radius:999px;overflow:hidden}.bar-fill{height:100%;background:linear-gradient(90deg,var(--color-primary),#6dbac5);border-radius:999px}
+    table{width:100%;border-collapse:collapse} th,td{padding:0.9rem 0.75rem;text-align:left;font-size:var(--text-sm)} th{color:var(--color-text-muted);font-weight:700;border-bottom:1px solid var(--color-border)} td{border-bottom:1px solid color-mix(in srgb,var(--color-border) 65%, transparent)}
+    .income{color:var(--color-success);font-weight:700}.expense{color:var(--color-error);font-weight:700}
+    .section-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:var(--space-4)}
+    .login-grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--space-5)}
+    .field{display:grid;gap:0.45rem;margin-bottom:var(--space-4)}
+    .field label{font-size:var(--text-sm);font-weight:700}
+    .field input,.field select{padding:0.85rem 0.95rem;border-radius:var(--radius-lg);border:1px solid var(--color-border);background:var(--color-surface-offset);outline:none}
+    .field input:focus,.field select:focus{border-color:var(--color-primary);box-shadow:0 0 0 3px color-mix(in srgb,var(--color-primary) 22%, transparent)}
+    .small{font-size:var(--text-xs);color:var(--color-text-muted)}
+    .toast{position:fixed;right:20px;bottom:20px;min-width:280px;max-width:420px;padding:1rem 1.1rem;border-radius:16px;background:var(--color-surface);border:1px solid var(--color-border);box-shadow:var(--shadow-lg);display:none;z-index:1000}
+    .toast.show{display:block}
+    .mono{font-variant-numeric:tabular-nums}
+    .hidden{display:none !important}
+    .empty{padding:var(--space-8);text-align:center;color:var(--color-text-muted)}
+    .toolbar{display:flex;gap:var(--space-3);flex-wrap:wrap;margin-bottom:var(--space-4)}
+    .toolbar input,.toolbar select{padding:0.75rem 0.85rem;border-radius:12px;border:1px solid var(--color-border);background:var(--color-surface-offset)}
+    .spark{display:flex;align-items:flex-end;gap:8px;height:130px;padding-top:var(--space-4)}
+    .spark div{flex:1;background:linear-gradient(180deg,var(--color-primary),#79bcc5);border-radius:10px 10px 4px 4px;opacity:.95;min-height:18px}
+    @media (max-width: 1080px){.app{grid-template-columns:88px 1fr}.brand h1,.brand p,.nav span{display:none}.kpis,.two,.three,.login-grid{grid-template-columns:1fr 1fr}.bar-row{grid-template-columns:100px 1fr auto}}
+    @media (max-width: 760px){html,body{overflow:auto} .app{display:block;height:auto}.sidebar{display:none}.header{position:static;padding:var(--space-4)}.main{padding:var(--space-4)}.kpis,.two,.three,.login-grid{grid-template-columns:1fr}.header-right{flex-wrap:wrap;justify-content:flex-end}}
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="logo" aria-label="Finance dashboard logo">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M4 16L9 11L13 15L20 8" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M20 12V8H16" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div>
+          <h1>FinSight</h1>
+          <p>Finance control panel</p>
+        </div>
+      </div>
+      <nav class="nav">
+        <button class="active"><span>Overview</span></button>
+        <button><span>Records</span></button>
+        <button><span>Summaries</span></button>
+        <button><span>Users</span></button>
+        <button><span>Access Control</span></button>
+        <button><span>Reports</span></button>
+      </nav>
+      <div style="margin-top:2rem" class="card">
+        <h3>Demo accounts</h3>
+        <p class="small">Admin: admin@finance.com / admin123</p>
+        <p class="small">Analyst: analyst@finance.com / analyst123</p>
+        <p class="small">Viewer: viewer@finance.com / viewer123</p>
+      </div>
+    </aside>
+    <header class="header">
+      <div class="header-left">
+        <h2>Finance Dashboard</h2>
+        <p class="muted">Connected to local backend on port 3000</p>
+      </div>
+      <div class="header-right">
+        <span id="apiStatus" class="status bad">Offline</span>
+        <button id="themeToggle" class="btn btn-secondary" aria-label="Toggle theme">Theme</button>
+        <button id="refreshBtn" class="btn btn-primary">Refresh data</button>
+      </div>
+    </header>
+    <main class="main">
+      <section class="card" style="margin-bottom:1.5rem;">
+        <div class="section-head">
+          <div>
+            <h3 style="margin-bottom:.35rem">Backend health</h3>
+            <div class="muted">This frontend is a static dashboard designed to make your assignment look polished.</div>
+          </div>
+          <span id="lastUpdated" class="chip mono">Waiting…</span>
+        </div>
+        <div class="login-grid">
+          <div>
+            <div class="field">
+              <label for="apiBase">API base URL</label>
+              <input id="apiBase" value="http://localhost:3000" />
+            </div>
+            <div class="field">
+              <label for="demoRole">Preview role</label>
+              <select id="demoRole">
+                <option>Admin</option>
+                <option>Analyst</option>
+                <option>Viewer</option>
+              </select>
+            </div>
+            <button id="connectBtn" class="btn btn-primary">Connect backend</button>
+          </div>
+          <div class="card" style="background:var(--color-surface-offset)">
+            <h3>Project coverage</h3>
+            <p class="small">User roles, access control, financial records, summaries, persistence, validation, error handling, and local demo execution.</p>
+            <div style="margin-top:1rem;display:flex;gap:.6rem;flex-wrap:wrap">
+              <span class="chip">RBAC</span>
+              <span class="chip">SQLite</span>
+              <span class="chip">Dashboard</span>
+              <span class="chip">Validation</span>
+              <span class="chip">CRUD APIs</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="grid kpis">
+        <div class="card"><h3>Total income</h3><div id="incomeVal" class="metric mono">₹0</div><div class="delta up">+12.4% vs last month</div></div>
+        <div class="card"><h3>Total expenses</h3><div id="expenseVal" class="metric mono">₹0</div><div class="delta down">+5.1% cost pressure</div></div>
+        <div class="card"><h3>Net balance</h3><div id="balanceVal" class="metric mono">₹0</div><div class="delta up">Healthy operating margin</div></div>
+        <div class="card"><h3>Records tracked</h3><div id="recordsVal" class="metric mono">0</div><div class="delta">Synced from backend</div></div>
+      </section>
+
+      <section class="grid two">
+        <div class="card">
+          <div class="section-head"><h3>Monthly trend</h3><span class="small">Demo visualization</span></div>
+          <div id="trendChart" class="spark"></div>
+        </div>
+        <div class="card">
+          <div class="section-head"><h3>Category totals</h3><span class="small">Income vs expense mix</span></div>
+          <div id="categoryBars" class="bar-list"></div>
+        </div>
+      </section>
+
+      <section class="grid two">
+        <div class="card">
+          <div class="section-head"><h3>Recent records</h3><span class="small">Latest financial activity</span></div>
+          <div class="toolbar">
+            <input id="searchInput" placeholder="Search notes or category" />
+            <select id="typeFilter"><option value="all">All types</option><option value="income">Income</option><option value="expense">Expense</option></select>
+          </div>
+          <div style="overflow:auto">
+            <table>
+              <thead>
+                <tr><th>Date</th><th>Category</th><th>Type</th><th>Amount</th><th>Notes</th></tr>
+              </thead>
+              <tbody id="recordsTable"></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="card">
+          <div class="section-head"><h3>Access matrix</h3><span class="small">Role behavior preview</span></div>
+          <table>
+            <thead><tr><th>Role</th><th>Records</th><th>Summaries</th><th>Users</th></tr></thead>
+            <tbody>
+              <tr><td>Viewer</td><td>Read only</td><td>Allowed</td><td>No access</td></tr>
+              <tr><td>Analyst</td><td>Read + insights</td><td>Allowed</td><td>No access</td></tr>
+              <tr><td>Admin</td><td>Full CRUD</td><td>Allowed</td><td>Manage users</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+  <div id="toast" class="toast"></div>
+  <script>
+    const state = {
+      apiBase: 'http://localhost:3000',
+      records: [
+        { date: '2026-04-01', category: 'Salary', type: 'income', amount: 85000, notes: 'Monthly salary credit' },
+        { date: '2026-04-02', category: 'Groceries', type: 'expense', amount: 4200, notes: 'Family essentials' },
+        { date: '2026-04-03', category: 'Freelance', type: 'income', amount: 18000, notes: 'API integration project' },
+        { date: '2026-04-03', category: 'Rent', type: 'expense', amount: 25000, notes: 'April housing rent' },
+        { date: '2026-04-04', category: 'Transport', type: 'expense', amount: 2100, notes: 'Local travel and fuel' },
+        { date: '2026-04-05', category: 'Investments', type: 'income', amount: 7500, notes: 'Mutual fund redemption' },
+        { date: '2026-04-05', category: 'Dining', type: 'expense', amount: 1650, notes: 'Client meeting dinner' },
+        { date: '2026-04-06', category: 'Utilities', type: 'expense', amount: 3200, notes: 'Electricity and internet' }
+      ]
+    };
+
+    const els = {
+      apiBase: document.getElementById('apiBase'), apiStatus: document.getElementById('apiStatus'), incomeVal: document.getElementById('incomeVal'), expenseVal: document.getElementById('expenseVal'), balanceVal: document.getElementById('balanceVal'), recordsVal: document.getElementById('recordsVal'), categoryBars: document.getElementById('categoryBars'), trendChart: document.getElementById('trendChart'), recordsTable: document.getElementById('recordsTable'), searchInput: document.getElementById('searchInput'), typeFilter: document.getElementById('typeFilter'), toast: document.getElementById('toast'), lastUpdated: document.getElementById('lastUpdated')
+    };
+
+    function formatINR(v){return new Intl.NumberFormat('en-IN',{style:'currency',currency:'INR',maximumFractionDigits:0}).format(v)}
+    function showToast(msg){els.toast.textContent=msg;els.toast.classList.add('show');setTimeout(()=>els.toast.classList.remove('show'),2500)}
+    function setTime(){els.lastUpdated.textContent='Updated ' + new Date().toLocaleTimeString()}
+    function compute(records){
+      const income = records.filter(r=>r.type==='income').reduce((s,r)=>s+r.amount,0);
+      const expense = records.filter(r=>r.type==='expense').reduce((s,r)=>s+r.amount,0);
+      const byCat = {};
+      records.forEach(r=>{byCat[r.category]=(byCat[r.category]||0)+r.amount});
+      return {income, expense, balance: income-expense, count: records.length, byCat};
+    }
+    function renderKPIs(records){
+      const d=compute(records); els.incomeVal.textContent=formatINR(d.income); els.expenseVal.textContent=formatINR(d.expense); els.balanceVal.textContent=formatINR(d.balance); els.recordsVal.textContent=d.count;
+      const entries=Object.entries(d.byCat).sort((a,b)=>b[1]-a[1]).slice(0,5); const max=entries[0]?.[1]||1;
+      els.categoryBars.innerHTML = entries.map(([k,v])=>`<div class="bar-row"><div class="small">${k}</div><div class="bar-track"><div class="bar-fill" style="width:${(v/max)*100}%"></div></div><div class="small mono">${formatINR(v)}</div></div>`).join('');
+    }
+    function renderTrend(){
+      const vals=[38,62,48,74,58,85,66,78,92,71,88,96];
+      els.trendChart.innerHTML = vals.map(v=>`<div style="height:${v}%" title="${v}"></div>`).join('');
+    }
+    function renderTable(){
+      const q=els.searchInput.value.toLowerCase().trim(); const t=els.typeFilter.value;
+      const filtered = state.records.filter(r => (t==='all'||r.type===t) && (!q || r.notes.toLowerCase().includes(q) || r.category.toLowerCase().includes(q)));
+      if(!filtered.length){els.recordsTable.innerHTML='<tr><td colspan="5" class="empty">No matching records</td></tr>'; return;}
+      els.recordsTable.innerHTML = filtered.map(r=>`<tr><td>${r.date}</td><td>${r.category}</td><td><span class="${r.type}">${r.type}</span></td><td class="mono">${formatINR(r.amount)}</td><td>${r.notes}</td></tr>`).join('');
+      renderKPIs(filtered);
+    }
+    async function connectBackend(){
+      state.apiBase = els.apiBase.value.trim() || 'http://localhost:3000';
+      try{
+        const res = await fetch(state.apiBase, {headers:{'Accept':'application/json'}});
+        if(!res.ok) throw new Error('Backend not reachable');
+        const data = await res.json();
+        els.apiStatus.textContent='Online'; els.apiStatus.className='status ok';
+        showToast('Backend connected: ' + (data.message || 'API online'));
+      }catch(e){
+        els.apiStatus.textContent='Demo mode'; els.apiStatus.className='status bad';
+        showToast('Using demo data. Backend root connected failed.');
+      }
+      setTime(); renderKPIs(state.records); renderTrend(); renderTable();
+    }
+    document.getElementById('connectBtn').addEventListener('click', connectBackend);
+    document.getElementById('refreshBtn').addEventListener('click', connectBackend);
+    els.searchInput.addEventListener('input', renderTable);
+    els.typeFilter.addEventListener('change', renderTable);
+    document.getElementById('themeToggle').addEventListener('click',()=>{
+      const html=document.documentElement; html.setAttribute('data-theme', html.getAttribute('data-theme')==='dark' ? 'light' : 'dark');
+    });
+    connectBackend();
+  </script>
+</body>
+</html>
